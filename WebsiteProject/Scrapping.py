@@ -10,6 +10,7 @@ import os
 os.environ['ANTHROPIC_API_KEY']=''
 
 os.environ['PINECONE_API_KEY']=''
+indexname=''
 
 def Scraped_data(url):
     loader = WebBaseLoader(url)
@@ -24,7 +25,7 @@ def chunked_data(data):
 def vector_model(chunks):
     texts = [t.page_content for t in chunks]
     Embedding_model= HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    vector = PineconeVectorStore.from_texts(texts, Embedding_model, index_name='youtube')
+    vector = PineconeVectorStore.from_texts(texts, Embedding_model, index_name=indexname)
     return vector
 
 def get_agent(vector):
@@ -49,10 +50,7 @@ def get_agent(vector):
 def Agent(url="https://medium.com/dataherald/how-to-langchain-sqlchain-c7342dd41614"):
     data=Scraped_data(url)
     chunks=chunked_data(data)
-    print
-    for ch in chunks:
-        print(ch)
-        print('-'*100)
+ 
 
     vector=vector_model(chunks)
     agent=get_agent(vector)
@@ -60,8 +58,5 @@ def Agent(url="https://medium.com/dataherald/how-to-langchain-sqlchain-c7342dd41
 
 
 
-agent=Agent()
-res=agent.invoke("What is the number of house sold in march 2022 in Boston? ")
-print(res)
 
 
